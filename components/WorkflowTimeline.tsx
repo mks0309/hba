@@ -6,8 +6,8 @@ import { MotionCard } from './MotionComponents';
 import { WORKFLOW_STEPS, getCurrentStepIndex } from '../utils/WorkflowUtils';
 import { AppStatus } from '../types';
 
-// Mock Status for visualization - In real app, this comes from props
-const CURRENT_STATUS: AppStatus = 'PENDING_ED'; 
+// Mock Status for visualization - Updated to PENDING_FINANCE to allow Nudge
+const CURRENT_STATUS: AppStatus = 'PENDING_FINANCE'; 
 
 const container = {
   hidden: { opacity: 0 },
@@ -42,7 +42,7 @@ export const WorkflowTimeline: React.FC = () => {
         <div className="text-right">
            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Current Stage</div>
            <div className="text-lg font-bold text-orange-500 flex items-center gap-1 justify-end animate-pulse">
-             <Clock className="w-4 h-4" /> Final Approval (ED)
+             <Clock className="w-4 h-4" /> Budget Concurrence
            </div>
         </div>
       </div>
@@ -89,8 +89,6 @@ export const WorkflowTimeline: React.FC = () => {
                         
                         {step.subSteps.map((sub, sIdx) => {
                           const Icon = sub.icon;
-                          // Mocking all parallel steps as complete for this view
-                          const isSubCompleted = true; 
                           
                           return (
                             <MotionCard key={sIdx} className="p-4 border-l-4 border-l-green-500 relative bg-white">
@@ -169,9 +167,28 @@ export const WorkflowTimeline: React.FC = () => {
                         </div>
                      </div>
                      
-                     <div className="mt-2 sm:mt-0">
+                     <div className="mt-2 sm:mt-0 flex flex-col sm:items-end gap-2">
                        {isCompleted && <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">Completed</span>}
-                       {isCurrent && <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded animate-pulse">In Progress</span>}
+                       
+                       {isCurrent && (
+                         <>
+                           <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded animate-pulse text-center sm:text-right">In Progress</span>
+                           <button 
+                             onClick={handleNudge}
+                             disabled={nudgeSent}
+                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all
+                               ${nudgeSent 
+                                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                                 : 'bg-iocl-blue/10 text-iocl-blue hover:bg-iocl-blue hover:text-white border border-iocl-blue/20'
+                               }
+                             `}
+                           >
+                             <BellRing className={`w-3 h-3 ${!nudgeSent ? 'animate-bounce' : ''}`} />
+                             {nudgeSent ? 'Reminder Sent' : 'Nudge Officer'}
+                           </button>
+                         </>
+                       )}
+
                        {!isCompleted && !isCurrent && <span className="text-xs font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded">Upcoming</span>}
                      </div>
                   </div>

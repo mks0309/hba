@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
@@ -25,7 +26,7 @@ export const CoreValuesTicker: React.FC = () => {
           // moving 50% ensures the second half aligns perfectly with where the first half started.
           animate={{ x: "-50%" }}
           transition={{
-            duration: 40,
+            duration: 80,
             ease: "linear",
             repeat: Infinity,
           }}
