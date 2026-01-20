@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, Clock, User, GitFork, Users, Scale, Hammer, FileText, CalendarClock, Briefcase, Wallet, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { X, Check, Clock, User, GitFork, Users, Scale, Hammer, FileText, CalendarClock, Briefcase, Wallet, ShieldCheck, CheckCircle2, Crown, FileCheck2 } from 'lucide-react';
 import { MotionCard } from './MotionComponents';
 
 interface Props {
@@ -62,12 +62,21 @@ export const ApplicationHistoryModal: React.FC<Props> = ({ isOpen, onClose, app 
     },
     {
       id: 5,
-      title: "Final Sanction",
-      role: "Competent Authority",
+      title: "Final Approval Accorded",
+      role: "ED (Region)",
+      officer: "Rajeev Kumar",
+      date: "Today",
+      status: "completed",
+      icon: Crown
+    },
+    {
+      id: 6,
+      title: "Sanction Order Issuance",
+      role: "ES Officer",
       officer: "Pending Action",
-      date: "Awaiting",
+      date: "Pending Issuance",
       status: "current",
-      icon: ShieldCheck
+      icon: FileCheck2
     }
   ];
 
@@ -161,7 +170,7 @@ export const ApplicationHistoryModal: React.FC<Props> = ({ isOpen, onClose, app 
                              <div key={idx} className="flex gap-4">
                                 {/* Icon Bubble */}
                                 <div className={`w-14 h-14 rounded-full border-4 border-white shadow-sm flex items-center justify-center flex-shrink-0 z-10
-                                   ${isCompleted ? 'bg-green-500 text-white' : isCurrent ? 'bg-iocl-saffron text-white' : 'bg-slate-200 text-slate-400'}
+                                   ${isCompleted ? 'bg-green-500 text-white' : isCurrent ? 'bg-orange-500 text-white animate-pulse' : 'bg-slate-200 text-slate-400'}
                                 `}>
                                    {isCompleted ? <Check className="w-6 h-6" /> : <Icon className="w-6 h-6" />}
                                 </div>
@@ -171,12 +180,12 @@ export const ApplicationHistoryModal: React.FC<Props> = ({ isOpen, onClose, app 
                                    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
                                       <div className="flex justify-between items-start mb-2">
                                          <div>
-                                            <h3 className={`font-bold text-sm ${isCompleted ? 'text-slate-800' : 'text-iocl-blue'}`}>
+                                            <h3 className={`font-bold text-sm ${isCompleted ? 'text-slate-800' : isCurrent ? 'text-orange-600' : 'text-slate-500'}`}>
                                                {step.title}
                                             </h3>
                                             <p className="text-xs text-slate-500 font-medium">{step.role}</p>
                                          </div>
-                                         <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${isCompleted ? 'bg-green-50 text-green-700' : 'bg-orange-50 text-orange-700'}`}>
+                                         <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${isCompleted ? 'bg-green-50 text-green-700' : isCurrent ? 'bg-orange-50 text-orange-700' : 'bg-slate-100 text-slate-400'}`}>
                                             {step.date}
                                          </span>
                                       </div>

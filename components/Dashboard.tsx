@@ -10,7 +10,7 @@ import { WorkflowTimeline } from './WorkflowTimeline';
 import { MotionCard } from './MotionComponents';
 import { EligibilityCalculator } from './EligibilityCalculator';
 import { SkeletonLoader } from './SkeletonLoader';
-import { UserCircle2, BadgeCheck, Check, ArrowRight, LandPlot, Building2, Loader2, Inbox, Send } from 'lucide-react';
+import { UserCircle2, BadgeCheck, Check, ArrowRight, LandPlot, Building2, Loader2, Inbox, Send, MapPin } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface DashboardProps {
@@ -20,12 +20,31 @@ interface DashboardProps {
   activeTab: string; // Controlled by parent
 }
 
+// Internal Fallback List for Demo Reliability
+const IOCL_LOCATIONS: Record<string, { city: string; state: string }> = {
+  "110003": { city: "New Delhi", state: "Delhi" },     // SCOPE Complex
+  "122002": { city: "Gurugram", state: "Haryana" },    // Marketing Head Office
+  "400051": { city: "Mumbai", state: "Maharashtra" },  // Bandra (HO)
+  "132140": { city: "Panipat", state: "Haryana" },     // Panipat Refinery
+  "786171": { city: "Digboi", state: "Assam" },        // Digboi Refinery
+  "391320": { city: "Vadodara", state: "Gujarat" },    // Gujarat Refinery
+  "754141": { city: "Paradip", state: "Odisha" }       // Paradip Refinery
+};
+
 export const Dashboard: React.FC<DashboardProps> = ({ user, appStatus, reviewData, activeTab }) => {
   const [appType, setAppType] = useState<ApplicationType>('Resale');
   const [isBankTransfer, setIsBankTransfer] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [submitState, setSubmitState] = useState<'idle' | 'loading' | 'success'>('idle');
   const [isInboxLoading, setIsInboxLoading] = useState(false);
+
+  // Address State
+  const [addressLine1, setAddressLine1] = useState('');
+  const [addressLine2, setAddressLine2] = useState('');
+  const [pincode, setPincode] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [isLocating, setIsLocating] = useState(false);
 
   // Simulate loading for inbox tab
   useEffect(() => {
@@ -35,6 +54,50 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, appStatus, reviewDat
       return () => clearTimeout(timer);
     }
   }, [activeTab]);
+
+  const handlePinChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setPincode(val);
+
+    if (val.length === 6) {
+        setIsLocating(true);
+        
+        // 1. Internal Check (Fast Path for Demo Reliability)
+        if (IOCL_LOCATIONS[val]) {
+            setCity(IOCL_LOCATIONS[val].city);
+            setState(IOCL_LOCATIONS[val].state);
+            setIsLocating(false);
+            return;
+        }
+
+        // 2. API Fetch (Hybrid Approach)
+        try {
+            const response = await fetch(`https://api.postalpincode.in/pincode/${val}`);
+            const data = await response.json();
+
+            if (data && data[0].Status === 'Success') {
+                const details = data[0].PostOffice[0];
+                setCity(details.District);
+                setState(details.State);
+            } else {
+                alert("Invalid Pin Code entered. Please check and try again.");
+                setCity('');
+                setState('');
+            }
+        } catch (err) {
+            console.error("Pin fetch error", err);
+            // Optional: fallback to manual entry if API fails entirely
+        } finally {
+            setIsLocating(false);
+        }
+    } else {
+        // Reset if user clears or edits
+        if (city || state) {
+            setCity('');
+            setState('');
+        }
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -232,27 +295,120 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, appStatus, reviewDat
                 )}
 
                 {!isReturned && (
-                  <motion.div variants={itemVariants} layout className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6">
-                     <div className="flex flex-col gap-2">
-                       <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Property Type</h3>
-                       <div className="flex gap-2">
-                         {[{ id: 'Resale', label: 'Resale', icon: Building2 }, { id: 'UnderConstruction', label: 'Construction', icon: LandPlot }].map((type) => (
-                            <button key={type.id} onClick={() => setAppType(type.id as ApplicationType)} className={`relative px-4 py-2.5 text-sm font-semibold rounded-lg flex items-center gap-2 border ${appType === type.id ? 'text-white bg-iocl-blue border-iocl-blue' : 'bg-slate-50 text-slate-600'}`}>
-                              <type.icon className="w-4 h-4" /> {type.label}
-                            </button>
-                         ))}
+                  <>
+                    <motion.div variants={itemVariants} layout className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6">
+                       <div className="flex flex-col gap-2">
+                         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Property Type</h3>
+                         <div className="flex gap-2">
+                           {[{ id: 'Resale', label: 'Resale', icon: Building2 }, { id: 'UnderConstruction', label: 'Construction', icon: LandPlot }].map((type) => (
+                              <button key={type.id} onClick={() => setAppType(type.id as ApplicationType)} className={`relative px-4 py-2.5 text-sm font-semibold rounded-lg flex items-center gap-2 border ${appType === type.id ? 'text-white bg-iocl-blue border-iocl-blue' : 'bg-slate-50 text-slate-600'}`}>
+                                <type.icon className="w-4 h-4" /> {type.label}
+                              </button>
+                           ))}
+                         </div>
                        </div>
-                     </div>
-                     <div className="flex flex-col gap-2">
-                       <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Bank Takeover</h3>
-                       <div className="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-50" onClick={() => setIsBankTransfer(!isBankTransfer)}>
-                          <div className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${isBankTransfer ? 'bg-iocl-saffron' : 'bg-slate-300'}`}>
-                            <motion.div layout className="bg-white w-4 h-4 rounded-full shadow-md" animate={{ x: isBankTransfer ? 24 : 0 }} />
-                          </div>
-                          <span className="text-sm font-bold text-slate-700">Enable Balance Transfer</span>
+                       <div className="flex flex-col gap-2">
+                         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Bank Takeover</h3>
+                         <div className="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-50" onClick={() => setIsBankTransfer(!isBankTransfer)}>
+                            <div className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors ${isBankTransfer ? 'bg-iocl-saffron' : 'bg-slate-300'}`}>
+                              <motion.div layout className="bg-white w-4 h-4 rounded-full shadow-md" animate={{ x: isBankTransfer ? 24 : 0 }} />
+                            </div>
+                            <span className="text-sm font-bold text-slate-700">Enable Balance Transfer</span>
+                         </div>
                        </div>
-                     </div>
-                  </motion.div>
+                    </motion.div>
+
+                    {/* NEW: Property Location Address Grid (Structured Form) */}
+                    <motion.div variants={itemVariants} className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 relative">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="p-1.5 bg-orange-50 text-iocl-saffron rounded-lg">
+                          <MapPin className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Property Location Details</h3>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Street Address 1 */}
+                        <div className="col-span-2">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Address Line 1</label>
+                          <input
+                            type="text"
+                            value={addressLine1}
+                            onChange={(e) => setAddressLine1(e.target.value)}
+                            placeholder="Flat / House No., Building Name"
+                            className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-iocl-saffron/20 focus:border-iocl-saffron outline-none transition-all"
+                            required
+                          />
+                        </div>
+
+                        {/* Street Address 2 */}
+                        <div className="col-span-2">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Address Line 2 <span className="text-slate-400 normal-case font-normal">(Optional)</span></label>
+                          <input
+                            type="text"
+                            value={addressLine2}
+                            onChange={(e) => setAddressLine2(e.target.value)}
+                            placeholder="Street, Colony, Area"
+                            className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-iocl-saffron/20 focus:border-iocl-saffron outline-none transition-all"
+                          />
+                        </div>
+
+                        {/* City */}
+                        <div className="col-span-1">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">City</label>
+                          <input 
+                            type="text" 
+                            value={city}
+                            readOnly
+                            placeholder="Auto-filled"
+                            className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-600 font-semibold cursor-not-allowed select-none"
+                          />
+                        </div>
+
+                        {/* State */}
+                        <div className="col-span-1">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">State</label>
+                          <input 
+                            type="text" 
+                            value={state}
+                            readOnly
+                             placeholder="Auto-filled"
+                            className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-600 font-semibold cursor-not-allowed select-none"
+                          />
+                        </div>
+
+                        {/* Pin Code */}
+                        <div className="col-span-1 relative">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pin Code</label>
+                          <input 
+                            type="text" 
+                            value={pincode}
+                            onChange={handlePinChange}
+                            placeholder="e.g. 110003"
+                            maxLength={6}
+                            className="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 font-bold focus:ring-2 focus:ring-iocl-saffron/20 focus:border-iocl-saffron outline-none transition-all"
+                            required
+                          />
+                          {isLocating && (
+                            <div className="absolute right-3 top-[38px]">
+                              <Loader2 className="w-4 h-4 animate-spin text-iocl-saffron" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Country */}
+                        <div className="col-span-1">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Country</label>
+                          <input
+                            type="text"
+                            value="India"
+                            disabled
+                            className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-500 font-semibold cursor-not-allowed"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  </>
                 )}
 
                 <MotionCard variants={itemVariants} className="overflow-hidden w-full flex-grow relative">
@@ -306,9 +462,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, appStatus, reviewDat
                       <motion.button 
                           layout
                           onClick={handleFinalSubmit}
-                          disabled={submitState !== 'idle'}
+                          disabled={submitState !== 'idle' || !pincode || !city || !addressLine1}
                           className={`h-14 px-10 font-bold shadow-lg flex items-center justify-center rounded-xl text-white transition-all
                             ${submitState === 'success' ? 'bg-green-500 hover:bg-green-600' : 'bg-iocl-blue hover:bg-blue-900'}
+                            ${(!pincode || !city || !addressLine1) && submitState === 'idle' ? 'opacity-50 cursor-not-allowed' : ''}
                           `}
                       >
                         {submitState === 'idle' && <span className="flex items-center gap-2">Final Submission <ArrowRight className="w-5 h-5"/></span>}

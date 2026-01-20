@@ -60,4 +60,5 @@ export interface InboxItem {
   submittedTime: string;
   status: AppStatus;
   priority: 'High' | 'Normal';
+  propertyAddress?: string;
 }

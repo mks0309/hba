@@ -33,7 +33,8 @@ const MOCK_INBOX: InboxItem[] = [
     applicant: { name: 'Manish Kumar Sharma', designation: 'Manager (Ops)', dept: 'LPG Operations', empId: '00510674' },
     submittedTime: '2 hrs ago',
     status: 'PENDING_LAW',
-    priority: 'Normal'
+    priority: 'Normal',
+    propertyAddress: "Flat 402, Tower B, Prestige City, Sector 150, Noida, UP - 201310"
   },
   {
     id: '2',
@@ -41,7 +42,8 @@ const MOCK_INBOX: InboxItem[] = [
     applicant: { name: 'Karthik Nair', designation: 'Senior Engineer', dept: 'Marketing Division', empId: '00512299' },
     submittedTime: '4 hrs ago',
     status: 'PENDING_ENGG',
-    priority: 'Normal'
+    priority: 'Normal',
+    propertyAddress: "Plot No. 45, Green Valley Enclave, Panipat, Haryana - 132103"
   },
   {
     id: '3',
@@ -49,7 +51,8 @@ const MOCK_INBOX: InboxItem[] = [
     applicant: { name: 'Priya Singh', designation: 'Manager (HR)', dept: 'Human Resources', empId: '00512290' },
     submittedTime: '1 day ago',
     status: 'RETURNED', 
-    priority: 'Normal'
+    priority: 'Normal',
+    propertyAddress: "Villa 22, Palm Meadows, Whitefield, Bangalore, Karnataka - 560066"
   },
   {
     id: '4',
@@ -57,7 +60,8 @@ const MOCK_INBOX: InboxItem[] = [
     applicant: { name: 'Vikram Malhotra', designation: 'DGM (Retail Sales)', dept: 'Retail Sales', empId: '00334455' },
     submittedTime: '5 hrs ago',
     status: 'PENDING_RELATIONS',
-    priority: 'Normal'
+    priority: 'Normal',
+    propertyAddress: "Flat 12A, Sea View Apartments, Worli, Mumbai, Maharashtra - 400018"
   },
   {
     id: '5',
@@ -65,7 +69,8 @@ const MOCK_INBOX: InboxItem[] = [
     applicant: { name: 'Sneha Gupta', designation: 'Manager (Finance)', dept: 'State Office', empId: '00667788' },
     submittedTime: '2 days ago',
     status: 'PENDING_FINANCE',
-    priority: 'Normal'
+    priority: 'Normal',
+    propertyAddress: "H.No 55, Civil Lines, Jaipur, Rajasthan - 302006"
   },
   {
     id: '6',
@@ -73,7 +78,8 @@ const MOCK_INBOX: InboxItem[] = [
     applicant: { name: 'Suresh Kumar', designation: 'GM (Operations)', dept: 'Aviation', empId: '00112233' },
     submittedTime: '3 days ago',
     status: 'PENDING_ED',
-    priority: 'Normal'
+    priority: 'Normal',
+    propertyAddress: "Penthouse 9, Skyline Towers, Salt Lake, Kolkata, WB - 700091"
   }
 ];
 
@@ -149,37 +155,49 @@ const ReviewDetail: React.FC<{
           </div>
        </div>
 
-       <MotionCard className="p-6 mb-8 flex flex-col md:flex-row gap-6 relative overflow-hidden">
+       <MotionCard className="p-6 mb-8 flex flex-col relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-10 -mt-10 z-0"></div>
-          <div className="relative z-10 flex items-center gap-4">
-             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-2xl font-bold text-slate-600 shadow-inner">
-               {app.applicant.name.charAt(0)}
-             </div>
-             <div>
-                <h3 className="font-bold text-xl text-slate-800">{app.applicant.name}</h3>
-                <div className="text-sm text-slate-500 space-y-1 mt-1">
-                   <p className="flex items-center gap-2"><Briefcase className="w-3.5 h-3.5" /> {app.applicant.designation}</p>
-                   <p className="flex items-center gap-2 text-xs font-mono bg-slate-100 px-2 py-0.5 rounded w-fit text-slate-600">Emp ID: {app.applicant.empId}</p>
+          
+          <div className="flex flex-col md:flex-row gap-6 relative z-10">
+            <div className="flex items-center gap-4">
+               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-2xl font-bold text-slate-600 shadow-inner">
+                 {app.applicant.name.charAt(0)}
+               </div>
+               <div>
+                  <h3 className="font-bold text-xl text-slate-800">{app.applicant.name}</h3>
+                  <div className="text-sm text-slate-500 space-y-1 mt-1">
+                     <p className="flex items-center gap-2"><Briefcase className="w-3.5 h-3.5" /> {app.applicant.designation}</p>
+                     <p className="flex items-center gap-2 text-xs font-mono bg-slate-100 px-2 py-0.5 rounded w-fit text-slate-600">Emp ID: {app.applicant.empId}</p>
+                  </div>
+               </div>
+            </div>
+            
+            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-6 md:border-l border-slate-100 md:pl-8">
+                <div>
+                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Loan Amount</div>
+                   <div className="font-bold text-lg text-slate-800">₹ 45.00 L</div>
                 </div>
-             </div>
+                <div>
+                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Property Type</div>
+                   <div className="font-bold text-lg text-slate-800">Resale Flat</div>
+                </div>
+                <div>
+                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Location</div>
+                   <div className="font-bold text-lg text-slate-800">Gurgaon</div>
+                </div>
+                <div>
+                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Submitted On</div>
+                   <div className="font-bold text-lg text-slate-800">20 Dec 2025</div>
+                </div>
+            </div>
           </div>
-          <div className="relative z-10 md:ml-auto md:border-l border-slate-100 md:pl-8 grid grid-cols-2 gap-x-12 gap-y-4">
-              <div>
-                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Loan Amount</div>
-                 <div className="font-bold text-lg text-slate-800">₹ 45.00 L</div>
-              </div>
-              <div>
-                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Property Type</div>
-                 <div className="font-bold text-lg text-slate-800">Resale Flat</div>
-              </div>
-              <div>
-                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Location</div>
-                 <div className="font-bold text-lg text-slate-800">Gurgaon</div>
-              </div>
-              <div>
-                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Submitted On</div>
-                 <div className="font-bold text-lg text-slate-800">20 Dec 2025</div>
-              </div>
+
+          <div className="mt-6 pt-4 border-t border-slate-100 relative z-10">
+            <h4 className="text-xs font-bold text-slate-500 uppercase mb-2">Property Address</h4>
+            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-sm font-medium text-slate-800 flex items-start gap-2">
+               <div className="mt-0.5 text-iocl-saffron"><Building className="w-4 h-4" /></div>
+               {app.propertyAddress || "Address details not available"}
+            </div>
           </div>
        </MotionCard>
 

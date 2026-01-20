@@ -19,6 +19,7 @@ interface Application {
   type: string;
   status: string;
   location: string;
+  propertyAddress: string;
 }
 
 // Updated Mock Data: Status is now APPROVED_BY_ED (Step 7 Complete), ready for Sanction Order (Step 8)
@@ -30,7 +31,8 @@ const MOCK_DATA: Application[] = [
      amount: 4500000,
      type: 'Resale',
      status: 'APPROVED_BY_ED', 
-     location: 'Mumbai'
+     location: 'Mumbai',
+     propertyAddress: "Flat 402, Tower B, Prestige City, Sector 150, Noida, UP - 201310"
   },
   {
      id: '102',
@@ -39,7 +41,8 @@ const MOCK_DATA: Application[] = [
      amount: 3200000,
      type: 'Construction',
      status: 'APPROVED_BY_ED',
-     location: 'Noida'
+     location: 'Noida',
+     propertyAddress: "Plot No. 45, Green Valley Enclave, Panipat, Haryana - 132103"
   },
   {
      id: '103',
@@ -48,7 +51,8 @@ const MOCK_DATA: Application[] = [
      amount: 6000000,
      type: 'Resale',
      status: 'APPROVED_BY_ED',
-     location: 'Gurgaon'
+     location: 'Gurgaon',
+     propertyAddress: "Villa 22, Palm Meadows, Whitefield, Bangalore, Karnataka - 560066"
   }
 ];
 
@@ -168,7 +172,8 @@ export const SanctionManager: React.FC = () => {
                empId: selectedApp.applicant.empId,
                amount: selectedApp.amount,
                location: selectedApp.location,
-               purpose: selectedApp.type === 'Resale' ? 'Purchase of Resale Flat' : 'Construction of House'
+               purpose: selectedApp.type === 'Resale' ? 'Purchase of Resale Flat' : 'Construction of House',
+               propertyAddress: selectedApp.propertyAddress
             }}
          />
       )}
